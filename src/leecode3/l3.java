@@ -5,29 +5,31 @@ import java.util.Map;
 
 /**
  * 给你一个字符串 S、一个字符串 T，请在字符串 S 里面找出：包含 T 所有字母的最小子串。
- *
+ * <p>
  * 示例：
- *
+ * <p>
  * 输入: S = "ADOBECODEBANC", T = "ABC"
  * 输出: "BANC"
  * 说明：
- *
+ * <p>
  * 如果 S 中不存这样的子串，则返回空字符串 ""。
  * 如果 S 中存在这样的子串，我们保证它是唯一的答案。
  */
 public class l3 {
     public static void main(String[] args) {
-        String s = "aba";
-        String t = "";
+        String s = "a";
+        String t = "a";
         String s1 = minWindow(s, t);
         String s2 = minWindo1w(s, t);
+        String s3 = test(s, t);
         System.out.println(s1);
         System.out.println(s2);
+        System.out.println(s3);
     }
 
 
     public static String minWindow(String s, String t) {
-        if (s == "" || t =="") {
+        if (s == "" || t == "") {
             return "";
         }
         int right = 0, left = 0, count = 0;
@@ -85,7 +87,7 @@ public class l3 {
     }
 
     public static String minWindo1w(String s, String t) {
-        if (s == "" || t =="") {
+        if (s == "" || t == "") {
             return "";
         }
         int left = 0, right = 0, minLength = s.length();
@@ -127,7 +129,7 @@ public class l3 {
                 }
                 // 不管是否总计数减1 当前该char的使用计数需要+1
                 if (hashMap.containsKey(c1)) {
-                    if(hashMap.get(c1) + 1 > 0) {
+                    if (hashMap.get(c1) + 1 > 0) {
                         cnt--;
                     }
                     // 移除1后 目标值的 原数值都需要+1
@@ -140,7 +142,64 @@ public class l3 {
         if (!flag) {
             return "";
         }
-        return s.substring(minLeft,minRight+1);
+        return s.substring(minLeft, minRight + 1);
     }
 
+
+    // 暴力循环
+    public static String test(String s, String t) {
+        if (s == "" || t == "" || s.length() < t.length()) {
+            return "";
+        }
+        if (s.equals(t)) {
+            return t;
+        }
+        int minLeft = 0;
+        int minRight = 0;
+        int mintLenth = -1;
+        Map<Character, Integer> dictT = new HashMap<>();
+        int count = 0;
+        for (int i = 0; i < s.length(); i++) {
+            char ci1 = s.charAt(i);
+            for (int i1 = 0; i1 < t.length(); i1++) {
+                dictT.put(t.charAt(i1), dictT.getOrDefault(t.charAt(i1), 0) + 1);
+            }
+            count = 0;
+            if (dictT.containsKey(ci1)) {
+                if (dictT.get(ci1) > 0) {
+                    count++;
+                }
+                dictT.put(ci1, dictT.get(ci1) - 1);
+            }
+            for (int j = i + 1; j < s.length(); j++) {
+                char c = s.charAt(j);
+                if (dictT.containsKey(c)) {
+                    if (dictT.get(c) > 0) {
+                        count++;
+                    }
+                    dictT.put(c, dictT.get(c) - 1);
+                }
+
+                if (count == t.length()) {
+                    if (t.length() == 1) {
+                        return t;
+                    }
+                    if (mintLenth > j - i + 1 || mintLenth < 0) {
+                        mintLenth = j - i + 1;
+                        minLeft = i;
+                        minRight = j;
+                    }
+                    break;
+                }
+            }
+            for (int i1 = 0; i1 < t.length(); i1++) {
+                dictT.put(t.charAt(i1), 0);
+            }
+        }
+        if (mintLenth < 0) {
+            return "";
+        }
+        return s.substring(minLeft, minRight + 1);
+
+    }
 }
